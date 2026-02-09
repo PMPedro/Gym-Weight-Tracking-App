@@ -90,17 +90,12 @@ fun TopPart() {
                 .height(400.dp)
                 .clip(DiagonalShape())
                 .background(MaterialTheme.colorScheme.primary),
-
             contentAlignment = Alignment.TopCenter,
-
-
             ) {
-
             //TODO add Nav
             WeightSection({ "250" }, {})
         }
     }
-
 }
 
 @Composable
@@ -146,7 +141,7 @@ fun StrenghTest() {
         Button(
             modifier = Modifier.fillMaxWidth(0.8f),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary ,
+                containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
             elevation = ButtonDefaults.buttonElevation(
@@ -157,7 +152,6 @@ fun StrenghTest() {
                 focusedElevation = 10.dp
             ),
             onClick = {
-
             }
         ) {
             Text(
@@ -170,109 +164,103 @@ fun StrenghTest() {
 }
 
 @Composable
-fun WorkoutPlayists (){
+fun WorkoutPlayists() {
     Column(
-        verticalArrangement = Arrangement.Center ,
-        horizontalAlignment = Alignment.CenterHorizontally ,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
-    ){
-        Text("Weight Tracking" ,
-            style = MaterialTheme.typography.titleMedium ,
+    ) {
+        Text(
+            "Weight Tracking",
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface
-            )
-
-        val workoutLists = listOf<String>("Lower" , "Upper" , "Lower" , "Upper" , "Lower" , "Upper" , "Lower" , "Upper")
-
+        )
+        val workoutLists =
+            listOf<String>("Lower", "Upper", "Lower", "Upper", "Lower", "Upper", "Lower", "Upper")
         Column(
             modifier = Modifier.height(180.dp)
         )
         {
-        LazyColumn() {
-            items(workoutLists){
-                item ->
-                WorkoutPlayistsItems(item)
-                Spacer(Modifier.padding(AppSpacing.S))
+            LazyColumn() {
+                items(workoutLists) { item ->
+                    WorkoutPlayistsItems(item)
+                    Spacer(Modifier.padding(AppSpacing.S))
+                }
             }
-
         }
-        }
-
-
     }
 }
 
-
-
 @Composable
-fun WorkoutPlayistsItems (
+fun WorkoutPlayistsItems(
     //todo add a data class here , with the lists name and all
-    listName : String
+    listName: String
 ) {
     Button(
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent) ,
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 8.dp,
+            pressedElevation = 12.dp
+        ),
         modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .border(width = 1.dp, color = MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(16.dp))
-                .shadow(8.dp, RoundedCornerShape(16.dp))
-                .background(brush = Brush.horizontalGradient (
-                    colors = listOf(
-                             MaterialTheme.colorScheme.surface,
-                             MaterialTheme.colorScheme.secondary
-
-                       )
-                )
-                    ,
-        shape = RoundedCornerShape(16.dp) ,
-
-
-
-            ),
-        onClick = {
-
-    }) {
-        Text(listName ,
-                style = MaterialTheme.typography.bodySmall ,
-                color = MaterialTheme.colorScheme.onSecondary
+            .fillMaxWidth(0.7f)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.secondary,
+                shape = RoundedCornerShape(16.dp)
             )
+            .shadow(8.dp, RoundedCornerShape(16.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.surface,
+                        MaterialTheme.colorScheme.secondary
+                    )
+                ),
+                shape = RoundedCornerShape(16.dp),
+                ),
+        onClick = {
+        }) {
+        Text(
+            listName,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondary
+        )
     }
 }
 
 @Composable
 fun AddPlayButton() {
-    Column (
-        verticalArrangement = Arrangement.Center ,
-        horizontalAlignment = Alignment.CenterHorizontally ,
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
     )
     {
-    Button(
-        modifier = Modifier.fillMaxWidth(0.8f),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onSecondary
-        ),
-        elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = 8.dp,
-            pressedElevation = 12.dp,
-            disabledElevation = 0.dp,
-            hoveredElevation = 10.dp,
-            focusedElevation = 10.dp
-        ),
-        onClick = {
-
+        Button(
+            modifier = Modifier.fillMaxWidth(0.8f),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 8.dp,
+                pressedElevation = 12.dp,
+                disabledElevation = 0.dp,
+                hoveredElevation = 10.dp,
+                focusedElevation = 10.dp
+            ),
+            onClick = {
+            }
+        ) {
+            Text(
+                "Add Workout List",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
-    ) {
-        Text(
-            "Add Workout List",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-       }
     }
 }
-
-
 
 
 @Preview(showBackground = true)
