@@ -248,7 +248,7 @@ fun BottomWeightButton() {
             }
         ) {
             Text(
-                "Save",
+                "Done",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondary
             )
