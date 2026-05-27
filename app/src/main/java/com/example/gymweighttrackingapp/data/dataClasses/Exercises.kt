@@ -1,4 +1,4 @@
-package com.example.gymweighttrackingapp.comon
+package com.example.gymweighttrackingapp.data.room.dataClasses
 
 data class Exercises(
     val name: String,

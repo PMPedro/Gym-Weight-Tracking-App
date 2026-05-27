@@ -19,50 +19,46 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.flightsapp.ui.theme.AppShapes
 import com.example.flightsapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.R
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
-import java.nio.file.WatchEvent
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
 
 
 @Composable
-fun WorkoutListScreen() {
+fun WorkoutListScreen(
+    onWorkoutEditListNav : (String) -> Unit ,
+    onDoneButtonNav : () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
 
-        TopPart()
+        TopPart(onWorkoutEditListNav)
         Spacer(Modifier.padding(AppSpacing.M))
         WorkoutListWeight()
         Spacer(Modifier.padding(AppSpacing.S))
-        BottomWeightButton()
+        BottomWeightButton(onDoneButtonNav)
 
     }
 
 }
 
 @Composable
-fun TopPart() {
+fun TopPart(
+    onWorkoutEditListNav : (String) -> Unit ,
+) {
 
     Surface(
         shadowElevation = 32.dp
@@ -101,7 +97,12 @@ fun TopPart() {
                         painter = painterResource(R.drawable.outline_edit_24) ,
                         contentDescription = "" ,
                         tint = MaterialTheme.colorScheme.surface ,
-                        modifier = Modifier.size(100.dp)
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clickable{
+                                onWorkoutEditListNav("ola") //todo change later, get string though viewmodel
+                            }
+
                     )
                 }
                 Text(
@@ -225,7 +226,9 @@ fun WorkoutListWeightItem(
 
 
 @Composable
-fun BottomWeightButton() {
+fun BottomWeightButton(
+    onDoneButtonNav : () -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxWidth() ,
         verticalArrangement = Arrangement.Center ,
@@ -245,6 +248,7 @@ fun BottomWeightButton() {
                 focusedElevation = 10.dp
             ),
             onClick = {
+                onDoneButtonNav()
             }
         ) {
             Text(
@@ -261,7 +265,7 @@ fun BottomWeightButton() {
 @Composable
 fun PrevWorkoutList() {
     GymWeightTrackingAppTheme(darkTheme = false) {
-        WorkoutListScreen()
+        WorkoutListScreen({}, {})
 
     }
 }
@@ -270,7 +274,7 @@ fun PrevWorkoutList() {
 @Composable
 fun WorkoutListDark() {
     GymWeightTrackingAppTheme(darkTheme = true) {
-        WorkoutListScreen()
+        WorkoutListScreen({} , {})
     }
 }
 

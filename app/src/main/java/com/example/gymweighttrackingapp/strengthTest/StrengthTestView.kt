@@ -1,7 +1,9 @@
-package com.example.gymweighttrackingapp.workoutLists.view
+package com.example.gymweighttrackingapp.strengthTest
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,97 +20,104 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.flightsapp.ui.theme.AppShapes
 import com.example.flightsapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.R
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
 
-
+/*
+* In future make most of this code reusable , and use on other workouts lists
+* */
 @Composable
-fun WorkoutListEdit() {
+fun StrengthTest(
+    onDoneButtonNav : () -> Unit
+) {
     Column(
-        modifier = Modifier
+        modifier = Modifier.Companion
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
 
-        TopPart()
-        Spacer(Modifier.padding(AppSpacing.M))
-        WorkoutList()
-        Spacer(Modifier.padding(AppSpacing.S))
-        BottomButton()
+        TopPartStrengthTest()
+        Spacer(Modifier.Companion.padding(AppSpacing.M))
+        WorkoutListWeightStrengthTest()
+        Spacer(Modifier.Companion.padding(AppSpacing.S))
+        BottomWeightButtonStrengthTest(onDoneButtonNav)
 
     }
 
 }
 
 @Composable
-fun SearchBar() {
+fun TopPartStrengthTest(
+
+) {
+
     Surface(
         shadowElevation = 32.dp
     ) {
         Column(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primary),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Companion.CenterHorizontally,
         )
         {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.Companion
+                    .fillMaxWidth()
+                    .padding(start = 50.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.Companion.Start
             )
             {
-                Spacer(Modifier.padding(AppSpacing.XL))
-                OutlinedTextField(
-                    value = "",
-                    modifier = Modifier.fillMaxWidth(0.95f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedBorderColor = Color.Transparent
-                    ),
-                    shape = AppShapes.extraLarge,
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.search),
-                            contentDescription = "",
-                            modifier = Modifier.size(40.dp)
-                            // tint = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    onValueChange = { },
-                    label = {
-                        Text(
-                            "Exercise Name",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                )
-                Spacer(Modifier.padding(AppSpacing.XL))
+                Spacer(Modifier.Companion.padding(AppSpacing.XL))
+
+                Row(
+                    modifier = Modifier.Companion.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Companion.CenterVertically
+                ) {
+                    Text(
+                        "Strength Test",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.Companion.fillMaxWidth(.7f)
+                    )
+                    Icon(
+                        painter = painterResource(R.drawable.arm_9795045),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.Companion
+                            .size(100.dp)
+
+                    )
+                }
+                Text(
+                    "MONDAY - Let's Test that Strength - Let's Gooooo",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.surface,
+
+                    )
+
+                Spacer(Modifier.Companion.padding(AppSpacing.XL))
             }
         }
     }
 }
 
 @Composable
-fun WorkoutList() {
+fun WorkoutListWeightStrengthTest() {
 
     var tempWorkList = listOf<String>(
         "Deadlift with back ends behinf the back upside down",
@@ -120,13 +129,13 @@ fun WorkoutList() {
     )
 
     Column(
-        modifier = Modifier.fillMaxHeight(0.8f)
+        modifier = Modifier.Companion.fillMaxHeight(0.8f)
     )
     {
         LazyColumn() {
             items(tempWorkList) { item ->
-                WorkoutListItem(item)
-                Spacer(Modifier.padding(AppSpacing.S))
+                StrengthTestWorkoutListWeightItem(item)
+                Spacer(Modifier.Companion.padding(AppSpacing.S))
             }
         }
     }
@@ -134,54 +143,73 @@ fun WorkoutList() {
 
 
 @Composable
-fun WorkoutListItem(
+fun StrengthTestWorkoutListWeightItem(
     name: String
 ) {
     Surface(
         shadowElevation = 8.dp
     ) {
         Column(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .fillMaxWidth()
                 .height(100.dp)
                 .background(
-                    brush = Brush.horizontalGradient(
+                    brush = Brush.Companion.horizontalGradient(
                         colors = listOf(
                             MaterialTheme.colorScheme.surface,
                             MaterialTheme.colorScheme.secondary
                         )
                     ),
                 ),
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.Companion.Start,
             verticalArrangement = Arrangement.Center
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Companion.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
                     painter = painterResource(R.drawable.corner_down_right),
                     contentDescription = "",
-                    modifier = Modifier.size(50.dp),
+                    modifier = Modifier.Companion.size(50.dp),
                     tint = MaterialTheme.colorScheme.secondary
                 )
                 Text(
                     name,
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier
-                        .fillMaxWidth(.9f)
+                    modifier = Modifier.Companion
+                        .fillMaxWidth(.6f)
                         .basicMarquee(),
                     maxLines = 1,
-                    overflow = TextOverflow.Clip
+                    overflow = TextOverflow.Companion.Clip
                 )
-                Icon(
-                    painter = painterResource(R.drawable.add_ic),
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(50.dp)
-                )
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Companion.End,
+                    modifier = Modifier.Companion
+                        .fillMaxWidth()
+                        .padding(end = 10.dp)
+                        .clickable {
 
+                        }
+                ) {
+                    Text(
+                        "4 Sets",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                    Text(
+                        "10 Reps",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                    Text(
+                        "Max" + " !0kg",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                }
             }
             Text(
                 "INTERMIDIADIATE" + " - " + "Strengh" + " - " + "Full Body",
@@ -196,14 +224,16 @@ fun WorkoutListItem(
 
 
 @Composable
-fun BottomButton() {
+fun BottomWeightButtonStrengthTest(
+    onDoneButtonNav : () -> Unit
+) {
     Column(
-        modifier = Modifier.fillMaxWidth() ,
-        verticalArrangement = Arrangement.Center ,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.Companion.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Companion.CenterHorizontally
     ) {
         Button(
-            modifier = Modifier.fillMaxWidth(0.9f),
+            modifier = Modifier.Companion.fillMaxWidth(0.9f),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
@@ -216,10 +246,11 @@ fun BottomButton() {
                 focusedElevation = 10.dp
             ),
             onClick = {
+                onDoneButtonNav()
             }
         ) {
             Text(
-                "Save",
+                "Done",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondary
             )
@@ -230,18 +261,17 @@ fun BottomButton() {
 
 @Preview(showBackground = true)
 @Composable
-fun PrevWorkoutListEdit() {
+fun PrevWorkoutList() {
     GymWeightTrackingAppTheme(darkTheme = false) {
-        WorkoutListEdit()
+        StrengthTest({})
 
     }
 }
 
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun WorkoutListEditDark() {
+fun WorkoutListDark() {
     GymWeightTrackingAppTheme(darkTheme = true) {
-        WorkoutListEdit()
+        StrengthTest({})
     }
 }
-
