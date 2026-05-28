@@ -64,20 +64,6 @@ Includes ViewModel testing with coroutine handling.
 
 ---
 
-## 📌 Project Status
-
-This project is still in active development.
-
-### 🔧 Currently In Progress:
-- Improved search functionality
-- Swipe-to-delete for workouts and playlists
-- Rename playlist feature
-- Weight tracking system improvements
-- Additional unit tests
-- UI/UX refinements and polish
-
----
-
 ## 🎯 Purpose of This Project
 
 This project was built to improve my understanding of:
