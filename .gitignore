@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+gradle.properties
+app/src/main/java/com/example/gymweighttrackingapp/utils/apiKey.kt
