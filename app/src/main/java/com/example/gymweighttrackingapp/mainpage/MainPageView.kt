@@ -1,7 +1,9 @@
-package com.example.gymweighttrackingapp.mainpage.view
+package com.example.gymweighttrackingapp.mainpage
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.res.Configuration
+import android.util.Log
 import android.widget.EditText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -27,16 +28,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import com.example.flightsapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.R
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
@@ -47,8 +52,11 @@ fun MainPage(
     onStrengthTestNav : () -> Unit ,
     onWorkoutListNav : (String) -> Unit,
     onAddWorkoutNav : () -> Unit ,
-    onWeightNav : () -> Unit
+    onWeightNav : () -> Unit ,
+    viewModel : mainPageViewModel
 ) {
+    val state by viewModel.uiState.collectAsState()
+    val playistName by viewModel.workoutPlayName.observeAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,11 +66,12 @@ fun MainPage(
         TopPart(onWeightNav)
         StrenghTest(onStrengthTestNav)
         Spacer(Modifier.padding(AppSpacing.XL))
-        WorkoutPlayists(onWorkoutListNav)
+        WorkoutPlayists(onWorkoutListNav, state)
         Spacer(Modifier.padding(AppSpacing.S))
-        AddPlayButton(onAddWorkoutNav)
+        AddPlayButton(onAddWorkoutNav , viewModel)
     }
 }
+
 
 // Custom diagonal shape
 fun DiagonalShape() = GenericShape { size, _ ->
@@ -100,7 +109,7 @@ fun TopPart(
 
 @Composable
 fun WeightSection(
-    funThatGivesWeight: () -> String,
+    funThatGivesWeight: () -> String, //TODO to be implemented
     navToWeight: () -> Unit
 ) {
     Column(
@@ -113,15 +122,16 @@ fun WeightSection(
             painter = painterResource(R.drawable.scale),
             contentDescription = "",
             tint = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.clickable {
+           /* modifier = Modifier
+                .clickable {
                 navToWeight()
-            }
+            }*/ //TODO to be implemented
         )
-        Text(
+       /* Text(
             funThatGivesWeight() + "KG",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.surface,
-        )
+        )*/
     }
 }
 
@@ -167,7 +177,8 @@ fun StrenghTest(onStrengthTestNav : () -> Unit ) {
 
 @Composable
 fun WorkoutPlayists(
-    onWorkoutListNav : (String) -> Unit
+    onWorkoutListNav : (String) -> Unit ,
+    state : MainPageUiState
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -179,25 +190,33 @@ fun WorkoutPlayists(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
-        val workoutLists =
-            listOf<String>("Lower", "Upper", "Lower", "Upper", "Lower", "Upper", "Lower", "Upper")
         Column(
             modifier = Modifier.fillMaxHeight(0.5f)
         )
         {
-            LazyColumn() {
-                items(workoutLists) { item ->
-                    WorkoutPlayistsItems(item , onWorkoutListNav)
-                    Spacer(Modifier.padding(AppSpacing.S))
+            when {
+                state.isLoading -> Text("Loading...")
+
+                state.error != null -> Text("Error ${state.error}")
+
+                else -> {
+                    LazyColumn() {
+                        items(state.workouts) { item ->
+                            Log.d("TAG" , "$item PlayistsName (what is sent) ")
+                            WorkoutPlayistsItems(item.workoutName , onWorkoutListNav)
+                            Spacer(Modifier.padding(AppSpacing.S))
+                        }
+                    }
                 }
             }
+
         }
     }
 }
 
 @Composable
 fun WorkoutPlayistsItems(
-    //todo add a data class here , with the lists name and all
+
     listName: String ,
     onWorkoutListNav : (String) -> Unit
 ) {
@@ -239,7 +258,9 @@ fun WorkoutPlayistsItems(
 
 @Composable
 fun AddPlayButton(
-    onAddWorkoutNav : () -> Unit
+    onAddWorkoutNav : () -> Unit ,
+    viewModel: mainPageViewModel
+
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -261,8 +282,8 @@ fun AddPlayButton(
                 focusedElevation = 10.dp
             ),
             onClick = {
-                //TODO add a modal to schose a playist name
 
+                viewModel.createPlay()
                 onAddWorkoutNav()
             }
         ) {
@@ -311,15 +332,17 @@ fun WorkoutExercisesDialog (
 @Composable
 fun PrevMainPage() {
     GymWeightTrackingAppTheme(darkTheme = false) {
-        MainPage({} , {} , {}, {})
+        val mainPageViewModel: mainPageViewModel = hiltViewModel()
+        MainPage({} , {} , {}, {}, mainPageViewModel)
     }
 }
 
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PrevMainPageDark() {
+
     GymWeightTrackingAppTheme(darkTheme = true) {
-        MainPage({} , {} , {}, {})
+        //MainPage({} , {} , {}, {})
     }
 }
 

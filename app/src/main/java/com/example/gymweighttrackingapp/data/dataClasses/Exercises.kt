@@ -1,4 +1,4 @@
-package com.example.gymweighttrackingapp.data.room.dataClasses
+package com.example.gymweighttrackingapp.data.dataClasses
 
 data class Exercises(
     val name: String,
@@ -6,5 +6,5 @@ data class Exercises(
     val muscle: String,
     val difficulty: String,
     val instructions: String,
-    val equipments: String
+    val equipments: List<String>
 )

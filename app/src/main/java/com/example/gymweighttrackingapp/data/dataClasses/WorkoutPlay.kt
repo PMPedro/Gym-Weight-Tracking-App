@@ -1,9 +1,6 @@
-package com.example.gymweighttrackingapp.data.room.dataClasses
+package com.example.gymweighttrackingapp.data.dataClasses
 
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
-
-data class workoutPlay(
+data class WorkoutPlay(
     val workoutId : Long = 0L,
     val workoutName: String = ""
 )

@@ -3,29 +3,28 @@ package com.example.gymweighttrackingapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.gymweighttrackingapp.mainpage.view.MainPage
+import androidx.navigation.compose.rememberNavController
+import com.example.gymweighttrackingapp.data.room.WorkoutPlay.WorkoutPlayDAO
+import com.example.gymweighttrackingapp.data.room.WorkoutPlay.WorkoutPlayRepo
+import com.example.gymweighttrackingapp.navigation.NavigationGrath
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
+
             GymWeightTrackingAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
-                    MainPage()
+                    NavigationGrath(navController = navController)
                 }
             }
         }

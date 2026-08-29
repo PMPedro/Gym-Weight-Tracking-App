@@ -7,7 +7,7 @@ import com.example.gymweighttrackingapp.data.room.Exercises.ExercisesRoom
 import com.example.gymweighttrackingapp.data.room.WorkoutExercise.WorkoutExerciseRoom
 import com.example.gymweighttrackingapp.data.room.WorkoutPlay.WorkoutPlayRoom
 
-data class WorkoutWithExercises(
+data class WorkoutExercisesRelation(
 
 
     @Embedded val workout: WorkoutPlayRoom,

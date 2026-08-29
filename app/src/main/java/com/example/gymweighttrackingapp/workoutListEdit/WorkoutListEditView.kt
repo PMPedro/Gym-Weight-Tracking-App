@@ -3,7 +3,9 @@ package com.example.gymweighttrackingapp.workoutListEdit
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -24,6 +27,11 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -35,21 +43,27 @@ import androidx.compose.ui.unit.dp
 import com.example.flightsapp.ui.theme.AppShapes
 import com.example.flightsapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.R
+import com.example.gymweighttrackingapp.data.dataClasses.Exercises
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
+import javax.annotation.meta.When
 
 @Composable
 fun WorkoutListEdit(
-    onSaveButtonNav : () -> Unit
+    onSaveButtonNav: () -> Unit,
+    viewModel: WorkoutListEditViewModel
 ) {
+
+
+    val state by viewModel.uiState.collectAsState()
     Column(
         modifier = Modifier.Companion
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
 
-        SearchBar()
+        SearchBar(viewModel)
         Spacer(Modifier.Companion.padding(AppSpacing.M))
-        WorkoutList()
+        WorkoutList(state,viewModel)
         Spacer(Modifier.Companion.padding(AppSpacing.S))
         BottomButton(onSaveButtonNav)
 
@@ -58,10 +72,13 @@ fun WorkoutListEdit(
 }
 
 @Composable
-fun SearchBar() {
+fun SearchBar(
+    viewModel: WorkoutListEditViewModel
+) {
     Surface(
         shadowElevation = 32.dp
     ) {
+        var text by remember { mutableStateOf("") }
         Column(
             modifier = Modifier.Companion
                 .fillMaxWidth()
@@ -79,7 +96,7 @@ fun SearchBar() {
             {
                 Spacer(Modifier.Companion.padding(AppSpacing.XL))
                 OutlinedTextField(
-                    value = "",
+                    value = text,
                     modifier = Modifier.Companion.fillMaxWidth(0.95f),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -94,10 +111,13 @@ fun SearchBar() {
                             // tint = MaterialTheme.colorScheme.primary
                         )
                     },
-                    onValueChange = { },
+                    onValueChange = {
+                        text = it
+                        viewModel.loadExercises(text)
+                    },
                     label = {
                         Text(
-                            "Exercise Name",
+                            "Muscle name",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -110,34 +130,72 @@ fun SearchBar() {
 }
 
 @Composable
-fun WorkoutList() {
-
-    var tempWorkList = listOf<String>(
-        "Deadlift with back ends behinf the back upside down",
-        "Squat",
-        "Etc",
-        "Deadlift",
-        "Squat",
-        "Etc"
-    )
-
+fun WorkoutList(
+    state: WorkoutListEditUiState ,
+    viewModel: WorkoutListEditViewModel
+) {
     Column(
         modifier = Modifier.Companion.fillMaxHeight(0.8f)
     )
     {
-        LazyColumn() {
-            items(tempWorkList) { item ->
-                WorkoutListItem(item)
-                Spacer(Modifier.Companion.padding(AppSpacing.S))
+        when {
+            state.isLoading -> {
+                SpiningLoadWheel()
+            }
+
+            state.error != null -> {
+                errorText("Error fetching data")
+            }
+
+            state.workouts.isEmpty() -> {
+                errorText("Error fetching data (is empty) ")
+            }
+
+            else -> {
+                LazyColumn() {
+                    items(state.workouts) { item ->
+                        WorkoutListItem(item,viewModel)
+                        Spacer(Modifier.Companion.padding(AppSpacing.S))
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+fun errorText(
+    text: String
+
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            "$text ",
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.headlineMedium
+        )
+    }
+}
+
+@Composable
+fun SpiningLoadWheel() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
 
 
 @Composable
 fun WorkoutListItem(
-    name: String
+    item: Exercises ,
+    viewModel: WorkoutListEditViewModel
 ) {
     Surface(
         shadowElevation = 8.dp
@@ -164,11 +222,15 @@ fun WorkoutListItem(
                 Icon(
                     painter = painterResource(R.drawable.corner_down_right),
                     contentDescription = "",
-                    modifier = Modifier.Companion.size(50.dp),
+                    modifier = Modifier
+                        .Companion
+                        .size(50.dp)
+
+                    ,
                     tint = MaterialTheme.colorScheme.secondary
                 )
                 Text(
-                    name,
+                    item.name,
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.Companion
@@ -181,12 +243,17 @@ fun WorkoutListItem(
                     painter = painterResource(R.drawable.add_ic),
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.Companion.size(50.dp)
+                    modifier = Modifier
+                        .Companion
+                        .size(50.dp).clickable{
+                            viewModel.addToList(item)
+                        }
+
                 )
 
             }
             Text(
-                "INTERMIDIADIATE" + " - " + "Strengh" + " - " + "Full Body",
+                "${item.difficulty}" + " - " + "${item.type}" + " - " + "${item.muscle}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -199,7 +266,7 @@ fun WorkoutListItem(
 
 @Composable
 fun BottomButton(
-    onSaveButtonNav : () -> Unit
+    onSaveButtonNav: () -> Unit
 ) {
     Column(
         modifier = Modifier.Companion.fillMaxWidth(),
@@ -229,23 +296,5 @@ fun BottomButton(
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PrevWorkoutListEdit() {
-    GymWeightTrackingAppTheme(darkTheme = false) {
-        WorkoutListEdit({})
-
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun WorkoutListEditDark() {
-    GymWeightTrackingAppTheme(darkTheme = true) {
-        WorkoutListEdit({})
     }
 }
