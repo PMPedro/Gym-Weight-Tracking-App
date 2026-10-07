@@ -42,8 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import com.example.flightsapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.R
+import com.example.gymweighttrackingapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
 import kotlin.collections.listOf
 
@@ -102,14 +102,14 @@ fun TopPart(
             contentAlignment = Alignment.TopCenter,
             ) {
 
-            WeightSection({ "250" },onWeightNav )
+            WeightSection({ "Kg" },onWeightNav )
         }
     }
 }
 
 @Composable
 fun WeightSection(
-    funThatGivesWeight: () -> String, //TODO to be implemented
+    funThatGivesWeight: () -> String,
     navToWeight: () -> Unit
 ) {
     Column(
@@ -125,13 +125,9 @@ fun WeightSection(
            /* modifier = Modifier
                 .clickable {
                 navToWeight()
-            }*/ //TODO to be implemented
+            }*/ //TODO will be implemented v1.1
         )
-       /* Text(
-            funThatGivesWeight() + "KG",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.surface,
-        )*/
+
     }
 }
 
@@ -167,7 +163,7 @@ fun StrenghTest(onStrengthTestNav : () -> Unit ) {
             }
         ) {
             Text(
-                "Strength Test",
+                "Workout Idea",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondary
             )
@@ -202,7 +198,7 @@ fun WorkoutPlayists(
                 else -> {
                     LazyColumn() {
                         items(state.workouts) { item ->
-                            Log.d("TAG" , "$item PlayistsName (what is sent) ")
+
                             WorkoutPlayistsItems(item.workoutName , onWorkoutListNav)
                             Spacer(Modifier.padding(AppSpacing.S))
                         }
@@ -216,7 +212,6 @@ fun WorkoutPlayists(
 
 @Composable
 fun WorkoutPlayistsItems(
-
     listName: String ,
     onWorkoutListNav : (String) -> Unit
 ) {

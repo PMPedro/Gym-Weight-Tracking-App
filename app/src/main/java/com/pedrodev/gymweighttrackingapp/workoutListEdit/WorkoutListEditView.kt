@@ -1,10 +1,11 @@
-package com.example.gymweighttrackingapp.strengthTest
+package com.example.gymweighttrackingapp.workoutListEdit
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,53 +19,66 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.flightsapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.R
+import com.example.gymweighttrackingapp.data.dataClasses.Exercises
+import com.example.gymweighttrackingapp.ui.theme.AppShapes
+import com.example.gymweighttrackingapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
+import javax.annotation.meta.When
 
-/*
-* In future make most of this code reusable , and use on other workouts lists
-* */
 @Composable
-fun StrengthTest(
-    onDoneButtonNav : () -> Unit
+fun WorkoutListEdit(
+    onSaveButtonNav: () -> Unit,
+    viewModel: WorkoutListEditViewModel
 ) {
+
+
+    val state by viewModel.uiState.collectAsState()
     Column(
         modifier = Modifier.Companion
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
 
-        TopPartStrengthTest()
+        SearchBar(viewModel)
         Spacer(Modifier.Companion.padding(AppSpacing.M))
-        WorkoutListWeightStrengthTest()
+        WorkoutList(state,viewModel)
         Spacer(Modifier.Companion.padding(AppSpacing.S))
-        BottomWeightButtonStrengthTest(onDoneButtonNav)
+        BottomButton(onSaveButtonNav)
 
     }
 
 }
 
 @Composable
-fun TopPartStrengthTest(
-
+fun SearchBar(
+    viewModel: WorkoutListEditViewModel
 ) {
-
     Surface(
         shadowElevation = 32.dp
     ) {
+        var text by remember { mutableStateOf("") }
         Column(
             modifier = Modifier.Companion
                 .fillMaxWidth()
@@ -75,41 +89,40 @@ fun TopPartStrengthTest(
         {
             Column(
                 modifier = Modifier.Companion
-                    .fillMaxWidth()
-                    .padding(start = 50.dp),
+                    .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Companion.Start
+                horizontalAlignment = Alignment.Companion.CenterHorizontally
             )
             {
                 Spacer(Modifier.Companion.padding(AppSpacing.XL))
-
-                Row(
-                    modifier = Modifier.Companion.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.Companion.CenterVertically
-                ) {
-                    Text(
-                        "Strength Test",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.surface,
-                        modifier = Modifier.Companion.fillMaxWidth(.7f)
-                    )
-                    Icon(
-                        painter = painterResource(R.drawable.arm_9795045),
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.surface,
-                        modifier = Modifier.Companion
-                            .size(100.dp)
-
-                    )
-                }
-                Text(
-                    "MONDAY - Let's Test that Strength - Let's Gooooo",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.surface,
-
-                    )
-
+                OutlinedTextField(
+                    value = text,
+                    modifier = Modifier.Companion.fillMaxWidth(0.95f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedBorderColor = Color.Companion.Transparent
+                    ),
+                    shape = AppShapes.extraLarge,
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.search),
+                            contentDescription = "",
+                            modifier = Modifier.Companion.size(40.dp)
+                            // tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    onValueChange = {
+                        text = it
+                        viewModel.loadExercises(text)
+                    },
+                    label = {
+                        Text(
+                            "Muscle name",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                )
                 Spacer(Modifier.Companion.padding(AppSpacing.XL))
             }
         }
@@ -117,34 +130,72 @@ fun TopPartStrengthTest(
 }
 
 @Composable
-fun WorkoutListWeightStrengthTest() {
-
-    var tempWorkList = listOf<String>(
-        "Deadlift with back ends behinf the back upside down",
-        "Squat",
-        "Etc",
-        "Deadlift",
-        "Squat",
-        "Etc"
-    )
-
+fun WorkoutList(
+    state: WorkoutListEditUiState ,
+    viewModel: WorkoutListEditViewModel
+) {
     Column(
         modifier = Modifier.Companion.fillMaxHeight(0.8f)
     )
     {
-        LazyColumn() {
-            items(tempWorkList) { item ->
-                StrengthTestWorkoutListWeightItem(item)
-                Spacer(Modifier.Companion.padding(AppSpacing.S))
+        when {
+            state.isLoading -> {
+                SpiningLoadWheel()
+            }
+
+            state.error != null -> {
+                errorText("Error fetching data")
+            }
+
+            state.workouts.isEmpty() -> {
+                errorText("Error fetching data (is empty) ")
+            }
+
+            else -> {
+                LazyColumn() {
+                    items(state.workouts) { item ->
+                        WorkoutListItem(item,viewModel)
+                        Spacer(Modifier.Companion.padding(AppSpacing.S))
+                    }
+                }
             }
         }
     }
 }
 
+@Composable
+fun errorText(
+    text: String
+
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            "$text ",
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.headlineMedium
+        )
+    }
+}
 
 @Composable
-fun StrengthTestWorkoutListWeightItem(
-    name: String
+fun SpiningLoadWheel() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+
+@Composable
+fun WorkoutListItem(
+    item: Exercises ,
+    viewModel: WorkoutListEditViewModel
 ) {
     Surface(
         shadowElevation = 8.dp
@@ -171,48 +222,38 @@ fun StrengthTestWorkoutListWeightItem(
                 Icon(
                     painter = painterResource(R.drawable.corner_down_right),
                     contentDescription = "",
-                    modifier = Modifier.Companion.size(50.dp),
+                    modifier = Modifier
+                        .Companion
+                        .size(50.dp)
+
+                    ,
                     tint = MaterialTheme.colorScheme.secondary
                 )
                 Text(
-                    name,
+                    item.name,
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.Companion
-                        .fillMaxWidth(.6f)
+                        .fillMaxWidth(.9f)
                         .basicMarquee(),
                     maxLines = 1,
                     overflow = TextOverflow.Companion.Clip
                 )
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Companion.End,
-                    modifier = Modifier.Companion
-                        .fillMaxWidth()
-                        .padding(end = 10.dp)
-                        .clickable {
-
+                Icon(
+                    painter = painterResource(R.drawable.add_ic),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .Companion
+                        .size(50.dp).clickable{
+                            viewModel.addToList(item)
                         }
-                ) {
-                    Text(
-                        "4 Sets",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.surface
-                    )
-                    Text(
-                        "10 Reps",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.surface
-                    )
-                    Text(
-                        "Max" + " !0kg",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.surface
-                    )
-                }
+
+                )
+
             }
             Text(
-                "INTERMIDIADIATE" + " - " + "Strengh" + " - " + "Full Body",
+                "${item.difficulty}" + " - " + "${item.type}" + " - " + "${item.muscle}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -224,8 +265,8 @@ fun StrengthTestWorkoutListWeightItem(
 
 
 @Composable
-fun BottomWeightButtonStrengthTest(
-    onDoneButtonNav : () -> Unit
+fun BottomButton(
+    onSaveButtonNav: () -> Unit
 ) {
     Column(
         modifier = Modifier.Companion.fillMaxWidth(),
@@ -246,32 +287,14 @@ fun BottomWeightButtonStrengthTest(
                 focusedElevation = 10.dp
             ),
             onClick = {
-                onDoneButtonNav()
+                onSaveButtonNav()
             }
         ) {
             Text(
-                "Done",
+                "Save",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PrevWorkoutList() {
-    GymWeightTrackingAppTheme(darkTheme = false) {
-        StrengthTest({})
-
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun WorkoutListDark() {
-    GymWeightTrackingAppTheme(darkTheme = true) {
-        StrengthTest({})
     }
 }

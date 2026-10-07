@@ -1,11 +1,10 @@
-package com.example.gymweighttrackingapp.workoutListEdit
+package com.example.gymweighttrackingapp.strengthTest
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,66 +18,50 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.flightsapp.ui.theme.AppShapes
-import com.example.flightsapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.R
-import com.example.gymweighttrackingapp.data.dataClasses.Exercises
+import com.example.gymweighttrackingapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
-import javax.annotation.meta.When
 
 @Composable
-fun WorkoutListEdit(
-    onSaveButtonNav: () -> Unit,
-    viewModel: WorkoutListEditViewModel
+fun StrengthTest(
+    onDoneButtonNav : () -> Unit
 ) {
-
-
-    val state by viewModel.uiState.collectAsState()
     Column(
         modifier = Modifier.Companion
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
 
-        SearchBar(viewModel)
+        TopPartStrengthTest()
         Spacer(Modifier.Companion.padding(AppSpacing.M))
-        WorkoutList(state,viewModel)
+        WorkoutListWeightStrengthTest()
         Spacer(Modifier.Companion.padding(AppSpacing.S))
-        BottomButton(onSaveButtonNav)
+        BottomWeightButtonStrengthTest(onDoneButtonNav)
 
     }
 
 }
 
 @Composable
-fun SearchBar(
-    viewModel: WorkoutListEditViewModel
+fun TopPartStrengthTest(
+
 ) {
+
     Surface(
         shadowElevation = 32.dp
     ) {
-        var text by remember { mutableStateOf("") }
         Column(
             modifier = Modifier.Companion
                 .fillMaxWidth()
@@ -89,40 +72,41 @@ fun SearchBar(
         {
             Column(
                 modifier = Modifier.Companion
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(start = 50.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Companion.CenterHorizontally
+                horizontalAlignment = Alignment.Companion.Start
             )
             {
                 Spacer(Modifier.Companion.padding(AppSpacing.XL))
-                OutlinedTextField(
-                    value = text,
-                    modifier = Modifier.Companion.fillMaxWidth(0.95f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedBorderColor = Color.Companion.Transparent
-                    ),
-                    shape = AppShapes.extraLarge,
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.search),
-                            contentDescription = "",
-                            modifier = Modifier.Companion.size(40.dp)
-                            // tint = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    onValueChange = {
-                        text = it
-                        viewModel.loadExercises(text)
-                    },
-                    label = {
-                        Text(
-                            "Muscle name",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                )
+
+                Row(
+                    modifier = Modifier.Companion.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Companion.CenterVertically
+                ) {
+                    Text(
+                        "Workout Ideas",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.Companion.fillMaxWidth(.7f)
+                    )
+                    Icon(
+                        painter = painterResource(R.drawable.arm_9795045),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.Companion
+                            .size(100.dp)
+
+                    )
+                }
+                Text(
+                    "MONDAY - Let's Test that Strength - Let's Gooooo",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.surface,
+
+                    )
+
                 Spacer(Modifier.Companion.padding(AppSpacing.XL))
             }
         }
@@ -130,72 +114,34 @@ fun SearchBar(
 }
 
 @Composable
-fun WorkoutList(
-    state: WorkoutListEditUiState ,
-    viewModel: WorkoutListEditViewModel
-) {
+fun WorkoutListWeightStrengthTest() {
+
+    var tempWorkList = listOf<String>(
+        "Deadlift",
+        "Squat",
+        "Bench Press",
+        "Military Press",
+        "Lat Pull-down",
+        "Farmer's Carry"
+    )
+
     Column(
         modifier = Modifier.Companion.fillMaxHeight(0.8f)
     )
     {
-        when {
-            state.isLoading -> {
-                SpiningLoadWheel()
-            }
-
-            state.error != null -> {
-                errorText("Error fetching data")
-            }
-
-            state.workouts.isEmpty() -> {
-                errorText("Error fetching data (is empty) ")
-            }
-
-            else -> {
-                LazyColumn() {
-                    items(state.workouts) { item ->
-                        WorkoutListItem(item,viewModel)
-                        Spacer(Modifier.Companion.padding(AppSpacing.S))
-                    }
-                }
+        LazyColumn() {
+            items(tempWorkList) { item ->
+                StrengthTestWorkoutListWeightItem(item)
+                Spacer(Modifier.Companion.padding(AppSpacing.S))
             }
         }
     }
 }
 
-@Composable
-fun errorText(
-    text: String
-
-) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            "$text ",
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.headlineMedium
-        )
-    }
-}
 
 @Composable
-fun SpiningLoadWheel() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-
-@Composable
-fun WorkoutListItem(
-    item: Exercises ,
-    viewModel: WorkoutListEditViewModel
+fun StrengthTestWorkoutListWeightItem(
+    name: String
 ) {
     Surface(
         shadowElevation = 8.dp
@@ -222,38 +168,48 @@ fun WorkoutListItem(
                 Icon(
                     painter = painterResource(R.drawable.corner_down_right),
                     contentDescription = "",
-                    modifier = Modifier
-                        .Companion
-                        .size(50.dp)
-
-                    ,
+                    modifier = Modifier.Companion.size(50.dp),
                     tint = MaterialTheme.colorScheme.secondary
                 )
                 Text(
-                    item.name,
+                    name,
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.Companion
-                        .fillMaxWidth(.9f)
+                        .fillMaxWidth(.6f)
                         .basicMarquee(),
                     maxLines = 1,
                     overflow = TextOverflow.Companion.Clip
                 )
-                Icon(
-                    painter = painterResource(R.drawable.add_ic),
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .Companion
-                        .size(50.dp).clickable{
-                            viewModel.addToList(item)
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Companion.End,
+                    modifier = Modifier.Companion
+                        .fillMaxWidth()
+                        .padding(end = 10.dp)
+                        .clickable {
+
                         }
-
-                )
-
+                ) {
+                    Text(
+                        "5 Sets",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                    Text(
+                        "5-12 Reps",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                    Text(
+                        "MAX WEIGHT!",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                }
             }
             Text(
-                "${item.difficulty}" + " - " + "${item.type}" + " - " + "${item.muscle}",
+                "Hard" + " - " + "Strength" + " - " + "Full Body",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -265,8 +221,8 @@ fun WorkoutListItem(
 
 
 @Composable
-fun BottomButton(
-    onSaveButtonNav: () -> Unit
+fun BottomWeightButtonStrengthTest(
+    onDoneButtonNav : () -> Unit
 ) {
     Column(
         modifier = Modifier.Companion.fillMaxWidth(),
@@ -287,14 +243,32 @@ fun BottomButton(
                 focusedElevation = 10.dp
             ),
             onClick = {
-                onSaveButtonNav()
+                onDoneButtonNav()
             }
         ) {
             Text(
-                "Save",
+                "Done",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PrevWorkoutList() {
+    GymWeightTrackingAppTheme(darkTheme = false) {
+        StrengthTest({})
+
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun WorkoutListDark() {
+    GymWeightTrackingAppTheme(darkTheme = true) {
+        StrengthTest({})
     }
 }

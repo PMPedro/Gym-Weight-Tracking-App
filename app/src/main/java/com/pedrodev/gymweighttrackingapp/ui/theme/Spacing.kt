@@ -1,4 +1,4 @@
-package com.example.flightsapp.ui.theme
+package com.example.gymweighttrackingapp.ui.theme
 
 import androidx.compose.ui.unit.dp
 

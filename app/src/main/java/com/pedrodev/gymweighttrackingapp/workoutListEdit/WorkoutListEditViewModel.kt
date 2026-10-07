@@ -53,7 +53,6 @@ class WorkoutListEditViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             val apiKey = ApiKeys.API_NINJAS_KEY
-            //apiRepo.getExercises()
             _uiState.value = WorkoutListEditUiState(isLoading = true)
 
             try {
@@ -76,7 +75,6 @@ class WorkoutListEditViewModel @Inject constructor(
 
 
     fun addToList(item : Exercises){
-        // TODO: replace name-based lookup with insert-returned ID
 
         viewModelScope.launch {
 
@@ -105,11 +103,8 @@ class WorkoutListEditViewModel @Inject constructor(
                     ))
 
             }catch (e : Exception) {
-                Log.d("ERROR", "==> ${e.message} <==")
+
             }
         }
     }
-
-
-
 }

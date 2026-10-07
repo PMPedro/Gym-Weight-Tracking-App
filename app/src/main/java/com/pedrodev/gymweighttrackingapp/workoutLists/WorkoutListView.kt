@@ -42,10 +42,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.flightsapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.R
 import com.example.gymweighttrackingapp.data.room.Exercises.ExercisesRoom
 import com.example.gymweighttrackingapp.mainpage.MainPageUiState
+import com.example.gymweighttrackingapp.ui.theme.AppSpacing
 import com.example.gymweighttrackingapp.ui.theme.GymWeightTrackingAppTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -161,7 +161,7 @@ fun WorkoutListWeight(
     {
         if (state.workouts.isEmpty()) {
             nothingToShowText()
-            Log.d("INFOTAG","state -> $state stateWorkouts-> ${state.workouts} and ->" )
+
         } else {
 
             LazyColumn {
@@ -370,12 +370,3 @@ fun BottomWeightButton(
     }
 }
 
-/*
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun WorkoutListDark() {
-    GymWeightTrackingAppTheme(darkTheme = true) {
-        //  WorkoutListScreen({} , {})
-    }
-}
-*/
